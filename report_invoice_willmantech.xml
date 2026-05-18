@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_invoice_willmantech">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>                  
+                    <t t-set="address">
+                        <div t-field="doc.partner_id" class="mb-0" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: True}"/>
+                        <p t-if="doc.partner_id.vat" class="mb-0">
+                            <t t-if="doc.company_id.account_fiscal_country_id.vat_label" t-out="doc.company_id.account_fiscal_country_id.vat_label"/>
+                            <t t-else="">CIF/NIF</t>: <span t-field="doc.partner_id.vat"/>
+                        </p>
+                    </t>       
+                    <div class="page">
+                        <div class="row mt32 mb32" id="legal_warning">
+                            <div class="col-12">
+                                <p style="color: #1a252f; font-weight: bold; border-top: 1px solid black; padding-top: 10px;">
+                                    Atención: Este documento vinculante está sujeto a las condiciones generales de venta de WillmanTech S.L.
+                                </p>
+                                <p class="text-muted" style="font-size: 10px; text-align: justify;">
+                                    Protección de datos: En cumplimiento de la Ley Orgánica 3/2018 y el RGPD europeo, le informamos que sus datos serán tratados de forma estrictamente confidencial por WillmanTech S.L. Puede ejercer sus derechos de acceso, rectificación, supresión y portabilidad dirigiéndose a nuestro DPO.
+                                </p>
+                            </div>
+                        </div>
+                        <h2>
+                            <span t-if="doc.move_type == 'out_invoice'">Factura de Venta # </span>
+                            <span t-if="doc.move_type == 'out_refund'">Factura Rectificativa # </span>
+                            <span t-field="doc.name">INV/2026/00001</span>
+                        </h2>      
+                        <div class="row mb-4" id="informations">
+                            <div t-if="doc.invoice_date" class="col" name="invoice_date">
+                                <strong>Fecha de Emisión</strong>
+                                <div t-field="doc.invoice_date" t-options="{&quot;widget&quot;: &quot;date&quot;}">2026-05-18</div>
+                            </div>
+                            <div t-if="doc.invoice_date_due" class="col" name="expiration_date">
+                                <strong>Vencimiento</strong>
+                                <div t-field="doc.invoice_date_due" t-options="{&quot;widget&quot;: &quot;date&quot;}">2026-05-18</div>
+                            </div>
+                            <div t-if="doc.invoice_origin" class="col" name="origin_doc">
+                                <strong>Origen</strong>
+                                <div t-field="doc.invoice_origin">SO0000</div>
+                            </div>
+                        </div>        
+                        <t t-set="display_discount" t-value="any(l.discount &gt; 0 for l in doc.invoice_line_ids)"/>
+                        <table class="table o_main_table table-borderless">
+                            <thead>
+                                <tr>
+                                    <th name="th_description" class="text-start">Descripción</th>
+                                    <th name="th_quantity" class="text-end text-nowrap">Cantidad</th>
+                                    <th name="th_priceunit" class="text-end text-nowrap">Precio Unitario</th>
+                                    <th name="th_discount" t-if="display_discount" class="text-end">
+                                        <span>Desc.%</span>
+                                    </th>
+                                    <th name="th_subtotal" class="text-end">
+                                        <span>Importe</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="invoice_tbody">
+                                <t t-foreach="doc.invoice_line_ids" t-as="line">
+                                    <tr t-if="not line.display_type">
+                                        <td><span t-field="line.name"/></td>
+                                        <td class="text-end"><span t-field="line.quantity"/></td>
+                                        <td class="text-end"><span t-field="line.price_unit"/></td>
+                                        <td t-if="display_discount" class="text-end">
+                                            <span t-field="line.discount"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <span t-field="line.price_subtotal"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        <div class="row justify-content-end mt-4">
+                            <div class="col-4">
+                                <table class="table table-sm pr-0">
+                                    <tr class="border-top font-weight-bold">
+                                        <td><strong>Total Neto</strong></td>
+                                        <td class="text-end">
+                                            <span t-field="doc.amount_total"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
